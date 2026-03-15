@@ -14,15 +14,10 @@ jobs:
 
     runs-on: self-hosted
     steps:
-    - name: Install pyenv
+    - name: Setup pyenv
       run: |
-        git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
         export PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
         echo "$HOME/.pyenv/bin:$HOME/.pyenv/shims" >> $GITHUB_PATH
-    - name: Install Python ${{ matrix.python-version }}
-      run: |
-        export PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
-        pyenv install ${{ matrix.python-version }} || true
     - uses: actions/checkout@v4
     - name: Set local Python version
       run: |
@@ -36,8 +31,35 @@ jobs:
       run: python -c 'import ffcache; print(ffcache.__version__ if hasattr(ffcache, "__version__") else "OK")'
     - name: Build distribution
       run: python -m pip install build && python -m build
-    - name: Upload artifacts
+    - name: Upload wheel artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ffcache-py${{ matrix.python-version }}
+        name: dist-${{ matrix.python-version }}-ubuntu-latest
+        path: dist/*.whl
+    - name: Upload sdist artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-sdist
+        path: dist/*.tar.gz
+        if-no-files-found: warn
+        overwrite: true
+
+  publish-to-pypi:
+    name: >-
+      Publish ffcache to PyPI
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ffcache
+    permissions:
+      id-token: write
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
         path: dist/
+    - name: Publish ffcache to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
