@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77.0.0", "wheel", "cython>=0.29.30"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ffcache"
+version = "0.1.0"
+description = "Firefox cache extractor - extract and export Firefox cache entries"
+readme = "README.md"
+requires-python = ">=3.6"
+license = "MIT"
+authors = [
+    {name = "Alberto Pessoa"}
+]
+keywords = ["firefox", "cache", "extractor"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = [
+    "brotli>=1.0",
+]
+
+[[tool.setuptools.ext-modules]]
+name = "_ffcache"
+sources = ["ffcache/ffcache.pyx"]
+
+[project.urls]
+Homepage = "https://github.com/pessoa-am/ffcache"
+Documentation = "https://github.com/pessoa-am/ffcache#readme"
+Repository = "https://github.com/pessoa-am/ffcache.git"
+"Bug Tracker" = "https://github.com/pessoa-am/ffcache/issues"
+
+[project.scripts]
+ffcache = "ffcache.cli:main"
+
+[tool.setuptools]
+packages = ["ffcache"]
+
+[tool.setuptools.package-data]
+ffcache = ["py.typed"]

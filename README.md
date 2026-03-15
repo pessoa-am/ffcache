@@ -1,8 +1,15 @@
 # ffcache
 
-![C/C++ CI](https://github.com/shosatojp/ffcache/workflows/C/C++%20CI/badge.svg)
+Firefox cache python extractor - extract and export Firefox cache entries
 
-Firefox cache extractor.
+## About This Project
+
+This is a Python port of the original [ffcache](https://github.com/shosatojp/ffcache) project by [shosatojp](https://github.com/shosatojp), which was originally written in C++ with pybind11. This port provides two implementations:
+
+- **Cython implementation** (`ffcache/ffcache.pyx`)
+- **Pure Python implementation** (`ffcache.py`) - Pure Python reference script using `struct`
+
+Both implementations aim 100% API compatibility with the original C++ version. The pure Python version serves as a reference implementation and is not distributed via PyPI.
 
 ## Usage
 
@@ -15,7 +22,7 @@ FFCACHE_DIR=~/.cache/mozilla/firefox/hoge.default/cache2 ffcache --list
 ### Save cached file
 
 ```sh
-FFCACHE_DIR=~/.cache/mozilla/firefox/hoge.default/cache2 ffcache --key https://example.com/image.png --out myimage.png
+ffcache --key "https://example.com" --cache /path/to/cache2 --out index.html
 ```
 
 ### Options
@@ -29,11 +36,7 @@ ffcache [OPTIONS]
 --out   -o      output path
 ```
 
-### Python Binding
-
-```sh
-pip install ffcache
-```
+### Example
 
 ```py
 from ffcache import FirefoxCache, FirefoxCacheEntry
@@ -53,6 +56,8 @@ if not os.path.exists(out_dir):
 
 cache = FirefoxCache(cache_dir)
 
+entry: FirefoxCacheEntry
+
 for entry in cache.records:
     url = entry.key
     print(url)
@@ -66,24 +71,36 @@ for entry in cache.records:
         pass
 ```
 
-## install
+There's also a more comprehensive `example.py` in the repository.
 
-download artifacts from [here](https://github.com/shosatojp/ffcache/actions) or manually build.
-
-## build
-
-### build on host
+## Installation
 
 ```sh
-sudo apt-get install -y g++ python3.8-dev make python3-pip
-pip3 install pybind11
-make
+pip install ffcache
 ```
 
-### build with docker
+## Build
+
+### Build on host
 
 ```sh
-sudo docker-compose up --build
+sudo apt-get install -y python3-dev python3-pip
+pip install cython brotli
+python setup.py build_ext --inplace
 ```
 
-* specify python version in `docker-compose.yml` (default python3.8)
+Or install in development mode:
+
+```sh
+pip install -e .
+```
+
+## License
+
+MIT
+
+## Attribution
+
+This is a python port of the original [ffcache](https://github.com/shosatojp/ffcache) project by [Sho Sato](https://github.com/shosatojp).
+
+The `example.py` script functionality is modeled after the [python2 scripts by James Habben](https://github.com/JamesHabben/FirefoxCache2).

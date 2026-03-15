@@ -16,3 +16,6 @@ CMakeCache.txt
 /subprojects/
 .envrc
 /tmp/
+*.c
+*.py[cod]
+*.csv
