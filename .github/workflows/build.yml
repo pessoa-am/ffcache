@@ -14,10 +14,20 @@ jobs:
 
     runs-on: self-hosted
     steps:
+    - name: Install pyenv
+      run: |
+        git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
+        export PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
+        echo "$HOME/.pyenv/bin:$HOME/.pyenv/shims" >> $GITHUB_PATH
+    - name: Install Python ${{ matrix.python-version }}
+      run: |
+        export PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
+        pyenv install ${{ matrix.python-version }} || true
     - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
+    - name: Set local Python version
+      run: |
+        export PATH="$HOME/.pyenv/bin:$HOME/.pyenv/shims:$PATH"
+        pyenv local ${{ matrix.python-version }}
     - name: Install build dependencies
       run: python -m pip install --upgrade pip setuptools wheel cython
     - name: Build and install
